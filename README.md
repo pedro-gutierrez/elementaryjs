@@ -1,5 +1,5 @@
 # Elementary
-Elementary is a small, functional and modular Elm-inspired web application framework written in Scheme, for the browser.
+Elementary is a small, functional and modular Elm-inspired, UI framework written in Scheme, for the browser.
 ## Introduction
 ### Small and modular
 Elementary is made of a very small core that orchestrates the communication with side effects. Side effects (UI rendering, Websockets, HTTP, Local storage, etc...) are like plugins that you can optionally load depending on your needs. You can also create your own side effects.
