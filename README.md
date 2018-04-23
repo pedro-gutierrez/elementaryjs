@@ -23,8 +23,7 @@ Statically serve `index.html`, play with it from your browser, and have a look a
 
 ## Concepts
 
-Elementary applications are declared as a set of pure functions:
-
+Elementary applications are declared as a set of pure functions.
 
 ### Init
 
@@ -32,41 +31,45 @@ The `init` function returns a specification of the initial state of our applicat
 
 1. A condition (always 'true)
 2. A model spec
-3. A list of commands to be triggered. Each command is defined by an effect and an encoder
+3. A list of commands to be triggered. Each command is defined as an *effect* and an *encoder*
 
 ### Encoders
 
-The `encoders` function returns a specification of the different kinds of data to be sent by our application to side effects as commands.
+The `encoders` function returns a specification of the different kinds of data to be sent by our application *to side effects*, as commands.
 
-Elementary relies on a declarative and convenient encoding library for that purpose.
+Elementary relies on a recursive, declarative and convenient encoding library for that purpose.
 
 ### Decoders
 
-The `decoders` function return the list of specifications of the data expected by our application, from side effects. Each decoder defines the input data structure and the message to map that data to.
+The `decoders` function returns the list of specifications of the data expected by our application, as input, *from side effects*. Each decoder defines the input data structure and the message to map that data to.
 
-Elementary relies on a declarative and convenient decoding library for that purpose.
+Elementary relies on a recursive, declarative and convenient decoding library for that purpose.
 
 ### Update
 
-The `update` function is the heart of our application logic. It describes the state machine that mutates the internal model and triggers new commands to be sent to side effects. Such state machine is expressed as a list of update specs. Each update spec is defined by:
+The `update` function is the heart of our application logic. 
 
-1. A message identifier (see Decoders).
-2. A list of child specs.
+It describes the state machine that mutates the internal model, and provides with the definition of the commands to be sent to side effects, after each state transition. 
+
+Such state machine is expressed as a list of update specs. Each update spec is defined by:
+
+1. A *message* identifier (see Decoders).
+2. A list of *child specs*.
 
 Each update child spec is made of:
 
-1. A condition
-2. A model spec, that defines the new state for the application
-3. A list of commands to be sent to side effects.
+1. A *condition*
+2. A *model spec*, that defines the new state for the application
+3. A list of *commands* to be sent to side effects.
 
 Each child spec must have a condition expression. 
 
-When data is received from a side effect, and is succesfully decoded into a messsage, then all update specs matching that message are evaluated. The first that verifies that its condition is true is applied, and its model and commands specs evaluated.
+When data is received from a side effect, and is succesfully decoded into a messsage, then all update specs matching that message are evaluated. The first spec verifying its own condition is selected and its model and commands specs are applied.
 
 ### Effects
 
-The `effects` function return the spec of the side effects
-required by our application in order to work properly. Side effects are plugins that will be loaded by the Elementary core, according to the settings given to each one of them.
+The `effects` function returns the spec of the side effects
+required by our application in order to work properly. Side effects are plugins that will be loaded by the Elementary core, according to the configuration settings given to each one of them.
 
 Real world applications will require multiple and relatively complex side effect for http, websockets communications, local storage, camera and microphone access, etc...
 
