@@ -70,7 +70,7 @@ Real world applications will require multiple and relatively complex side effect
 List of effects available so far:
 
 * [Elementary UI](./scm/elementary-ui.scm): An Elementary UI effect based on [Maquette](https://maquettejs.org).
-* [Elementary WS](./scm/elementart-ws.scm): An Elementary Websocket effect.
+* [Elementary WS](./scm/elementary-ws.scm): An Elementary Websocket effect.
 
 More to come soon!
 
