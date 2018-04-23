@@ -19,7 +19,7 @@ Elementary is written in Scheme and runs in the browser, on top of
 
 ## Getting started
 
-Statically serve `index.html`, play with it, and have a look a `app.scm` in order to get acquainted with some of the basic concepts behind Elementary.
+Statically serve `index.html`, play with it from your browser, and have a look at the annotated source in `app.scm` in order to get a feel of some of the basic concepts behind Elementary.
 
 
 
