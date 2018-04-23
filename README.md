@@ -38,10 +38,13 @@ The `init` function returns a specification of the initial state of our applicat
 
 The `encoders` function returns a specification of the different kinds of data to be sent by our application to side effects as commands.
 
+Elementary relies on a declarative and convenient encoding library for that purpose.
 
 ### Decoders
 
-The `decoders` function return the list of specifications of the data expected by our application, from side effects. Each decoder defines the input data structure and the message to map to that data.
+The `decoders` function return the list of specifications of the data expected by our application, from side effects. Each decoder defines the input data structure and the message to map that data to.
+
+Elementary relies on a declarative and convenient decoding library for that purpose.
 
 ### Update
 
