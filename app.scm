@@ -61,7 +61,7 @@
                   (list (list 'message "Hello again!!!")) 
                   (list (list 'ui 'louder_view)))))))
 
-;; The effects function return the spec of the side effects
+;; The effects function returns the spec of the side effects
 ;; required by our application in order to work properly. Side effects
 ;; are plugins that will be loaded by the Elementary core, according to the 
 ;; settings given to each one of them.
@@ -73,7 +73,7 @@
   (list (list 'ui 'elementary-ui (list))))
 
 ;; This is the standard call that bootstraps our app. All the specifications
-;; defined above get compiled by the code. As your can see, application logic is expressed 
-;; in terms of pure functions. Side effects are isolated and the 
-;; interface is clearly defined in terms of encoders and decoders.
+;; defined above get compiled by the core. As as result, application logic is expressed 
+;; exclusively in terms of pure functions. Side effects are isolated and their 
+;; protocol is clearly defined in terms of encoders and decoders.
 (app init update decoders encoders effects)
