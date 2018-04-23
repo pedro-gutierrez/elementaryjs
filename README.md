@@ -17,7 +17,11 @@ Elementary kind of follows the `model-update-view` flow described by the [Elm ar
 Elementary is written in Scheme and runs in the browser, on top of 
 [Biwascheme](http://www.biwascheme.org/)
 
-## Installation
+## Getting started
+
+Statically serve `index.html`, play with it, and have a look a `app.scm` in order to get acquainted with some of the basic concepts behind Elementary.
+
+
 
 
 
