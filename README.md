@@ -77,6 +77,7 @@ List of effects available so far:
 
 * [Elementary UI](./scm/elementary-ui.scm): An Elementary effect for UI rendering, based on [Maquette](https://maquettejs.org).
 * [Elementary WS](./scm/elementary-ws.scm): An Elementary effect for Websocket communications.
+* [Elementary Events](./scm/elementary-events.scm): A simple Elementary effect for publishing and asynchronous delivery of events.
 
 More to come soon!
 
