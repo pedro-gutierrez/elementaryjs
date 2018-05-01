@@ -106,10 +106,19 @@
           (else 
             (console-error "cannot encode list" specs in encoded)))))))
 
+(define (encode-text spec in)
+  (case (string? spec)
+    ('#t (list 'ok spec))
+    (else 
+      (let ((encoded (encode spec in)))
+        (case (car encoded)
+          ('ok (to-string (car (cdr encoded))))
+          (else encoded))))))
+
 (define (encode spec input) 
   (case (list? spec)
     ('#f
-     (case (or (symbol? spec) (string? spec))
+     (case (or (symbol? spec) (string? spec) (number? spec))
        ('#t (list 'ok spec))
        ('#f 
         (console-error "invalid spec" spec)
@@ -119,8 +128,8 @@
             (value-spec (car (cdr spec))))
         (case type-spec
           ('symbol (list 'ok value-spec))
-          ('text (list 'ok value-spec))
-          ('from (encode-from value-spec input)) 
+          ('text (encode-text value-spec input))
+          ('from (encode-from value-spec input))
           ('object (encode-object value-spec input '()))
           ('list (encode-list value-spec input '()))
           ('map (encode-map value-spec input))
@@ -131,18 +140,18 @@
 (define (decode-symbol spec in)
   (case (and (symbol? in) (eq? in spec))
     ('#t (list 'ok in))
-    ('#f '(error text-mismatch))))
+    ('#f (list 'error 'symbol-mismatch spec in))))
 
 (define (decode-text spec in)
   (let* ((condition (and (string? in) (or (eq? 'any spec) (eq? in spec)))))
     (case condition
       ('#t (list 'ok in))
-      ('#f '(error text-mismatch)))))
+      ('#f (list 'error 'text-mismatch spec in)))))
 
 (define (decode-number spec in)
   (case (and (number? in) (or (eq? 'any spec) (eq? in spec)))
     ('#t (list 'ok in))
-    ('#f '(error number-mismatch))))
+    ('#f (list 'error 'number-mismatch spec in))))
 
 (define (decode-v-spec spec)
    (case (list? spec)
@@ -172,9 +181,20 @@
     (else 
       (case (car spec)
         ('object (decode-objects (car (cdr spec)) in out))
+        ('text (decode-texts (car (cdr spec)) in out))
         (else 
           (console-error "unsupported list decoder spec type" spec)
             '(error invalid--list-type-spec))))))
+
+(define (decode-texts spec in out)
+  (case (length in)
+    ('0 (list 'ok (reverse out)))
+    (else
+      (let* ((next (car in))
+             (decoded (decode-text spec next)))
+        (case (car decoded)
+          ('ok (decode-texts spec (cdr in) (cons (car (cdr decoded)) out)))
+          (else decoded))))))
 
 (define (decode-objects spec in out)
   (case (length in)
@@ -232,4 +252,11 @@
       (console-error "unsupported condition" spec)
       '#f)))
     
+(define (to-string v)
+  (case (string? v)
+    ('#t (list 'ok v))
+    ('#f 
+     (case (number? v)
+       ('#t (list 'ok (number->string v)))
+       (else (console-error "can't convert value to a string" v))))))
 
