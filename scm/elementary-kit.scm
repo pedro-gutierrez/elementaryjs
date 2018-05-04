@@ -14,6 +14,23 @@
       ('#f 'undef)
       ('#t (hashtable-ref m k '()))))
 
+(define (infer-type v)
+  (case (symbol? v)
+    ('#t 'symbol)
+    (else 
+      (case (string? v)
+        ('#t 'string)
+        (else 
+          (case (list? v)
+            ('#t 'list)
+            (else 
+              (case (number? v)
+                ('#t 'number)
+                (else 
+                  (case (boolean? v)
+                    ('#t 'boolean)
+                    (else 'other)))))))))))
+
 (define (map-push-at k v m)
   (let ((v2 (map-get k m)))
     (case v2 
@@ -137,6 +154,11 @@
             (console-error "invalid value spec" spec)
             '(error invalid-spec)))))))
 
+(define (decode-boolean spec in)
+  (case (and (boolean? in) (or (eq? 'any spec) (eq? in spec)))
+    ('#t (list 'ok in))
+    ('#f (list 'error 'boolean-mismatch spec in))))
+
 (define (decode-symbol spec in)
   (case (and (symbol? in) (eq? in spec))
     ('#t (list 'ok in))
@@ -170,12 +192,26 @@
           ('text (decode-text value-spec in))
           ('number (decode-number value-spec in))
           ('object (decode-object value-spec in '()))
-          ('list (decode-list value-spec in '()))
+          ('list (decode-list value-spec in)) 
+          ('boolean (decode-boolean value-spec in))
           (else
             (console-error "unsupported decoder spec type" (list type-spec spec))
             '(error invalid-type-spec)))))))
 
-(define (decode-list spec in out)
+(define (decode-list spec in)
+  (case (number? spec)
+    ('#t (decode-list-size spec in))
+    ('#f 
+     (case (length in)
+       ('0 (list 'error 'list-size-mismatch (length in)))
+       (else (decode-non-empty-list spec in '()))))))
+
+(define (decode-list-size size in)
+  (case (eq? size (length in))
+    ('#t (list 'ok in))
+    ('#f (list 'error list-size-mismatch size in))))
+
+(define (decode-non-empty-list spec in out)
   (case (length in)
     ('0 (list 'ok (reverse out)))
     (else 
@@ -253,10 +289,14 @@
       '#f)))
     
 (define (to-string v)
-  (case (string? v)
-    ('#t (list 'ok v))
-    ('#f 
-     (case (number? v)
-       ('#t (list 'ok (number->string v)))
-       (else (console-error "can't convert value to a string" v))))))
+  (let ((infered-type (infer-type v)))
+    (case infered-type
+      ('symbol (list 'ok (symbol->string v)))
+      ('string (list 'ok v))
+      ('number (list 'ok (number->string v)))
+      ('boolean
+       (case v
+         ('#t (list 'ok "true"))
+         ('#f (list 'ok "false"))))
+      (else (console-error "can't convert value to a string" infered-type v)))))
 
