@@ -92,17 +92,27 @@
               (case v
                 ('undef (list 'error 'no-view view-name))
                 (else (list 'ok v)))))
-          (else (console-error "cannot resolve view name" view-name)))))   
+          (else (console-error "cannot resolve view name" view-name ctx)))))   
 
-    
+    (define (eval-view-condition spec in)
+      (case spec
+        ('undef '#t)
+        (else (eval-condition spec in))))
+
     (define (compile-view-ref spec ctx)
       (let* ((params-spec (get 'params spec))
+             (condition-spec (get 'condition spec))
              (v-ctx (view-ctx params-spec ctx)))
         (case (car v-ctx)
-          ('ok 
+          ('ok
            (let ((v (resolve-view spec ctx)))
             (case (car v)
-              ('ok (compile-view (car (cdr v)) (car (cdr v-ctx))))
+              ('ok 
+               (let* ((view-params (car (cdr v-ctx)))
+                      (condition-verified (eval-view-condition condition-spec view-params)))
+                 (case condition-verified
+                   ('#t (compile-view (car (cdr v)) view-params))
+                   ('#f ""))))
               (else (console-error "no such view" spec)))))
           (else (console-error "cannot encode view context" spec ctx v-ctx)))))
     
